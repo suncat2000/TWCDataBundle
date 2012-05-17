@@ -16,7 +16,7 @@ Installation
   1. Add this bundle and kriswallsmith Buzz library to your project as Git submodules:
 
           $ git submodule add git://github.com/kriswallsmith/Buzz.git vendor/buzz
-          $ git submodule add git@github.com:suncat2000/TWCDataBundle.git vendor/bundles/SunCat/TWCDataBundle
+          $ git submodule add git://github.com/suncat2000/TWCDataBundle.git vendor/bundles/SunCat/TWCDataBundle
 
   2. Register the namespace `Buzz` & `SunCat` to your project's autoloader bootstrap script:
 
