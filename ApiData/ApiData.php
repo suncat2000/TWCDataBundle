@@ -71,13 +71,13 @@ class ApiData {
      * @param string $resoursePart 
      * @param bool $urlencoded 
      */
-    public function setResourcePart($resoursePart, $cleaned = false, $escaped = false)
+    public function setResourcePart($resoursePart, $cleaned = false, $spaceEscaped = false)
     {
         if(!$cleaned){
             $resoursePart = $this->cleanPart($resoursePart);
         }
         
-        if(!$escaped){
+        if(!$spaceEscaped){
             $resoursePart = $this->escapeSpace($resoursePart);
         }
         
@@ -192,12 +192,12 @@ class ApiData {
                 '/',
                 "%22",
                 "%3c",		// <
-                "%253c",            // <
+                "%253c",        // <
                 "%3e", 		// >
                 "%0e", 		// >
                 "%28", 		// (
                 "%29", 		// )
-                "%2528",            // (
+                "%2528",        // (
                 "%26", 		// &
                 "%24", 		// $
                 "%3f", 		// ?
