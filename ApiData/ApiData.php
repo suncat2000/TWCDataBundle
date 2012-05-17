@@ -71,9 +71,17 @@ class ApiData {
      * @param string $resoursePart 
      * @param bool $urlencoded 
      */
-    public function setResourcePart($resoursePart, $urlencoded = false)
+    public function setResourcePart($resoursePart, $cleaned = false, $escaped = false)
     {
-        $this->resourcePart = !$urlencoded ? urlencode($resoursePart) : $resoursePart;
+        if(!$cleaned){
+            $resoursePart = $this->cleanPart($resoursePart);
+        }
+        
+        if(!$escaped){
+            $resoursePart = $this->escapeSpace($resoursePart);
+        }
+        
+        $this->resourcePart = $resoursePart;
     }
 
     /**
@@ -161,5 +169,52 @@ class ApiData {
                 '&apikey=' . $this->apiKey . 
                 $paramsStr;
     }
+    
+    /**
+     * Clean resourcePart
+     * @param string $partStr
+     * @return string 
+     */
+    protected function cleanPart($partStr)
+    {
+        $badSymbols = array(
+                "<!--",
+                "-->",
+                "'",
+                "<",
+                ">",
+                '"',
+                '&',
+                '$',
+                '=',
+                ';',
+                '?',
+                '/',
+                "%22",
+                "%3c",		// <
+                "%253c",            // <
+                "%3e", 		// >
+                "%0e", 		// >
+                "%28", 		// (
+                "%29", 		// )
+                "%2528",            // (
+                "%26", 		// &
+                "%24", 		// $
+                "%3f", 		// ?
+                "%3b", 		// ;
+                "%3d"		// =
+        );
 
+        return stripslashes(str_replace($badSymbols, '', $partStr));
+    }    
+    
+    /**
+     * Escape spaces in $resourcePart
+     * @param string $partStr
+     * @return string
+     */
+    protected function escapeSpace($partStr)
+    {
+        return str_replace(' ', '%20', $partStr);
+    }
 }
