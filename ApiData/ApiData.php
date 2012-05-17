@@ -138,8 +138,12 @@ class ApiData {
      */
     protected function getDataResourse()
     {
+        if(!isset($this->command{0})){
+            throw new TWCException("You must set the command! Use setCommand() method.");
+        }
+        
         if(!isset($this->resourcePart{0})){
-            throw new TWCException("Don't set location ID or zip code! Use setResourcePart() method.");
+            throw new TWCException("You must set location ID or zip code! Use setResourcePart() method.");
         }
         
         $paramsStr = '';
