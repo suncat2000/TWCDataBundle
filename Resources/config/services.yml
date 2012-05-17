@@ -1,0 +1,12 @@
+parameters:
+    twc_data.apikey: ~
+    twc_data.format: ~
+    twc_data.units: ~
+    twc_data.host: ~
+    twc_data.locale: ~
+    twc_data.country: ~
+
+services:
+    twc_data.api_data:
+        class: SunCat\TWCDataBundle\ApiData\ApiData
+        arguments: [%twc_data.apikey%, %twc_data.format%, %twc_data.units%, %twc_data.host%, %twc_data.locale%, %twc_data.country% ]
