@@ -45,10 +45,10 @@ Installation
             #app/config/config.yml
             twc_data:
                 apikey: your_api_key
-                format: json # or xml; optional, default: json
-                units: m # or s; optional, default: m
-                locale: en_GB # optional, default: en_GB
-                country: UK # optional, default: UK
+                format: json        # or xml; optional, default: json
+                units: m            # or s; optional, default: m
+                locale: en_GB       # optional, default: en_GB
+                country: UK         # optional, default: UK
 
 Usage example
 ============
