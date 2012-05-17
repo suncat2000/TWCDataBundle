@@ -180,7 +180,6 @@ class ApiData {
         $badSymbols = array(
                 "<!--",
                 "-->",
-                "'",
                 "<",
                 ">",
                 '"',
