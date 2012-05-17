@@ -71,14 +71,14 @@ class ApiData {
      * @param string $resoursePart 
      * @param bool $urlencoded 
      */
-    public function setResourcePart($resoursePart, $cleaned = false, $spaceEscaped = false)
+    public function setResourcePart($resoursePart, $spacesEscaped = false, $cleaned = false)
     {
         if(!$cleaned){
             $resoursePart = $this->cleanPart($resoursePart);
         }
         
-        if(!$spaceEscaped){
-            $resoursePart = $this->escapeSpace($resoursePart);
+        if(!$spacesEscaped){
+            $resoursePart = $this->escapeSpaces($resoursePart);
         }
         
         $this->resourcePart = $resoursePart;
@@ -212,7 +212,7 @@ class ApiData {
      * @param string $partStr
      * @return string
      */
-    protected function escapeSpace($partStr)
+    protected function escapeSpaces($partStr)
     {
         return str_replace(' ', '%20', $partStr);
     }
