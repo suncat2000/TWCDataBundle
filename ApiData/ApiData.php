@@ -22,6 +22,7 @@ class ApiData {
     private $host;
     private $locale;
     private $country;
+    private $enabledCountry;
     private $params;
     private $resourcePart;
     
@@ -48,7 +49,7 @@ class ApiData {
         $this->host = $host;
         $this->locale = $locale;
         $this->country = $country;
-        
+        $this->enabledCountry = true;
         $this->params = array();
         $this->method = 'GET';
     }
@@ -82,6 +83,28 @@ class ApiData {
         }
         
         $this->resourcePart = $resoursePart;
+    }
+
+    /**
+     * Set country
+     * @param string $countryCode 
+     */
+    public function setCountry($countryCode)
+    {
+        if(is_string($countryCode) && strlen($countryCode) == 2){
+            $this->country =  strtoupper($countryCode);
+        }
+    }
+
+    /**
+     * Enabled/disabled country
+     * @param boolean $enabled 
+     */
+    public function enabledCountry($enabled)
+    {
+        if(is_bool($enabled)){
+            $this->enabledCountry = $enabled;
+        } 
     }
 
     /**
@@ -131,13 +154,18 @@ class ApiData {
         $response = new BuzzResponse();
         
         $client = new FileGetContents();
-        $client->send($request, $response);
         
-        if(!$response->isOk()){
-            throw new TWCException("Problems with getting data.");
+        try{
+            $client->send($request, $response);
+
+            if($response->isOk()){
+                return $response;
+            }
+        } catch (TWCException $e){
+            return null;
         }
 
-        return $response;
+        return null;
     }
     
     /**
@@ -161,12 +189,17 @@ class ApiData {
             }
         }   
         
+        $countryStr = '';
+        if(true === $this->enabledCountry){
+            $countryStr .= '&country=' . $this->country;
+        }   
+        
         return  '/data/' . $this->command . '/' . $this->resourcePart . 
                 '?doctype=' . $this->format . 
-                '&country=' . $this->country . 
                 '&locale=' . $this->locale . 
                 '&units=' . $this->units . 
                 '&apikey=' . $this->apiKey . 
+                $countryStr . 
                 $paramsStr;
     }
     

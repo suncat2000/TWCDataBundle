@@ -66,13 +66,13 @@ Usage example
             protected function configure()
             {
                 $this
-                    ->setName('wheather:locsearch')
+                    ->setName('weather:locsearch')
                     ->setDescription('Get location ID of city by city name')
                     ->addOption('city', 0, InputOption::VALUE_REQUIRED, 'City name')
                     ->setHelp(<<<EOF
-        The <info>wheather:locsearch</info> command get location ID.
+        The <info>weather:locsearch</info> command get location ID.
         
-        <info>php app/console wheather:locsearch --city=london</info>
+        <info>php app/console weather:locsearch --city=london</info>
         
         EOF
                     )
@@ -95,7 +95,7 @@ Usage example
                 $twcData->setResourcePart($cityName);
                 $response = $twcData->getData();
 
-                if($twcData->getFormat() == 'json'){
+                if($twcData->getFormat() == 'json' && $response instanceof \Buzz\Message\Response){
                     $data = json_decode($response->getContent());
                     //
                     // put your code
@@ -106,9 +106,17 @@ Usage example
         }
 ```
 
-For set query string parameters:
+Run command:
 
 ``` php
+        php app/console weather:locsearch --city=london
+```
+
+Query string parameters to TWC API:
+
+``` php
+        $twcData->setCountry('UK');
+        $twcData->enabledCountry(false); // disable `country` param in query string to TWC API
         $twcData->setParams(array('day' => '0,1,2'));
         $twcData->setParams(array('start' => 1293840000, 'end' => 1296518399));
 ```
