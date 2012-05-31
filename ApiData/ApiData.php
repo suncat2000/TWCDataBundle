@@ -73,13 +73,13 @@ class ApiData {
      * @param bool $spacesEscaped If true escaped space symbols '%20'
      * @param bool $cleaned If true clear not valid symbols
      */
-    public function setResourcePart($resoursePart, $spacesEscaped = false, $cleaned = false)
+    public function setResourcePart($resoursePart, $spacesEscaped = true, $cleaned = true)
     {
-        if(!$cleaned){
+        if($cleaned){
             $resoursePart = $this->cleanPart($resoursePart);
         }
         
-        if(!$spacesEscaped){
+        if($spacesEscaped){
             $resoursePart = $this->escapeSpaces($resoursePart);
         }
         
