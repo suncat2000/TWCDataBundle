@@ -93,14 +93,11 @@ Usage example
                 }
 
                 $twcData->setResourcePart($cityName);
-                $response = $twcData->getData();
+                $data = $twcData->getData();
 
-                if($twcData->getFormat() == 'json' && $response instanceof \Buzz\Message\Response){
-                    $data = json_decode($response->getContent());
-                    //
-                    // put your code
-                    //
-                }
+                //
+                // put your code
+                //
             }
 
         }
