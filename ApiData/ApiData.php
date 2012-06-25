@@ -57,12 +57,12 @@ class ApiData
 
     /**
      * Set command
-     * @param string $command 
+     * @param string $command Available: 'locsearch', 'loc', 'trupoint_cc', 'svr', 'ss', 'df', 'dn', 'avg'
      */
     public function setCommand($command)
     {
         if (!in_array($command, $this->availCommands)) {
-            throw new TWCException('This command not available in API');
+            throw new TWCException('This command not available in TWC API');
         }
 
         $this->command = $command;
@@ -70,12 +70,11 @@ class ApiData
 
     /**
      * Set resource part (Location ID, zip code)
-     * 
      * @param string $resoursePart  Part of resource for query string
-     * @param bool   $spacesEscaped Escaped spaces
-     * @param bool   $cleaned       Cleaned
+     * @param bool   $spacesEscaped If true escaped space symbols '%20'
+     * @param bool   $cleaned       If true clear not valid symbols
      */
-    public function setResourcePart($resoursePart, $spacesEscaped = false, $cleaned = false)
+    public function setResourcePart($resoursePart, $spacesEscaped = true, $cleaned = true)
     {
         if (!$cleaned) {
             $resoursePart = $this->cleanPart($resoursePart);
@@ -90,7 +89,7 @@ class ApiData
 
     /**
      * Set country
-     * @param string $countryCode 
+     * @param string $countryCode Example: 'RS' - Russia, 'UK' - United Kingdom, 'GM' - Germany, 'US' - United States, 'FR' - France
      */
     public function setCountry($countryCode)
     {
@@ -101,7 +100,7 @@ class ApiData
 
     /**
      * Enabled/disabled country
-     * @param boolean $enabled 
+     * @param boolean $enabled If false disabled 'country' param in query string to TWC API, else on the contrary
      */
     public function enabledCountry($enabled)
     {
@@ -111,8 +110,8 @@ class ApiData
     }
 
     /**
-     * Set query string parameters (day, start, end)
-     * @param array $params 
+     * Set query string parameters
+     * @param array $params Available: 'day', 'days', 'start', 'end', 'cb'
      */
     public function setParams(array $params)
     {
@@ -127,7 +126,7 @@ class ApiData
 
     /**
      * Set HTTP Method
-     * @param string $method 
+     * @param string $method Available: 'GET', 'POST', 'DELETE', 'PUT'
      */
     public function setMethod($method)
     {
@@ -148,34 +147,55 @@ class ApiData
     }
 
     /**
-     * Get data from api wheather.com
-     * @return Buzz\Message\Response 
+     * Get data from TWC API
+     * @return array|SimpleXMLElement|false If format 'json' return array, else if 'xml' return SimpleXMLElement
      */
     public function getData()
     {
-        $resource = $this->getDataResourse();
+        $resource = $this->getDataResourse(); // resourse '/data/'
 
         $request = new BuzzRequest($this->method, $resource, $this->host);
         $response = new BuzzResponse();
 
         $client = new FileGetContents();
 
-        try {
-            $client->send($request, $response);
-
-            if ($response->isOk()) {
-                return $response;
+        // Processing get data from TWC API
+        $attempt = 0;
+        do {
+            if ($attempt) {
+                sleep($attempt);
             }
-        } catch (TWCException $e) {
-            return null;
+
+            try {
+                $client->send($request, $response);
+            } catch (TWCException $e) {
+                continue;
+            }
+        } while (!($response instanceof BuzzResponse) && ++$attempt < 5);
+
+        // BuzzResponse is fail
+        if (!($response instanceof BuzzResponse) || !$response->isOk()) {
+            throw new TWCException("Response to TWC API is fail.");
         }
 
-        return null;
+        // Parse data from BuzzResponse content
+        switch($this->getFormat()){
+            case 'json':
+                $data = json_decode($response->getContent());
+                break;
+            case 'xml':
+                $data = simplexml_load_string($response->getContent());
+                break;
+            default :
+                $data = false;
+        }
+
+        return $data;
     }
 
     /**
-     * Get resource for Request
-     * @return string
+     * Get resource for BuzzRequest
+     * @return string Return resource for request to TWC API
      */
     protected function getDataResourse()
     {
