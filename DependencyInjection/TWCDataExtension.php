@@ -24,12 +24,12 @@ class TWCDataExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
-        
-        $container->setParameter('twc_data.apikey', $config['apikey']);       
-        $container->setParameter('twc_data.format', $config['format']); 
-        $container->setParameter('twc_data.units', $config['units']); 
-        $container->setParameter('twc_data.host', $config['host']); 
-        $container->setParameter('twc_data.locale', $config['locale']); 
-        $container->setParameter('twc_data.country', $config['country']); 
+
+        $container->setParameter('twc_data.apikey', $config['apikey']);
+        $container->setParameter('twc_data.format', $config['format']);
+        $container->setParameter('twc_data.units', $config['units']);
+        $container->setParameter('twc_data.host', $config['host']);
+        $container->setParameter('twc_data.locale', $config['locale']);
+        $container->setParameter('twc_data.country', $config['country']);
     }
 }

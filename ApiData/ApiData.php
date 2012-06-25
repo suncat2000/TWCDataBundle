@@ -10,10 +10,10 @@ use SunCat\Exception\TWCException;
 /**
  * TWC Api Data
  *
- * @author Nikolay Ivlev
+ * @author Nikolay Ivlev <sun_cat2000@mail.ru>
  */
-class ApiData {
-    
+class ApiData
+{
     private $apiKey;
     private $method;
     private $command;
@@ -25,7 +25,7 @@ class ApiData {
     private $enabledCountry;
     private $params;
     private $resourcePart;
-    
+
     private $availCommands = array('locsearch', 'loc', 'trupoint_cc', 'svr', 'ss', 'df', 'dn', 'avg');
     private $availParam = array('day', 'days', 'start', 'end', 'cb');
     private $availMethods = array('GET', 'POST', 'DELETE', 'PUT');
@@ -34,12 +34,13 @@ class ApiData {
 
     /**
      * Class constructor
-     * @param string $apiKey
-     * @param string $format
-     * @param string $units
-     * @param string $host
-     * @param string $locale
-     * @param string $country
+     * 
+     * @param string $apiKey  API key
+     * @param string $format  Format json|xml
+     * @param string $units   Units
+     * @param string $host    HOST (http://api.theweatherchannel.com)
+     * @param string $locale  Locale
+     * @param string $country Country
      */
     public function __construct($apiKey, $format = 'json', $units = 'm', $host = 'http://api.theweatherchannel.com', $locale = 'en_GB', $country = 'UK')
     {
@@ -53,14 +54,14 @@ class ApiData {
         $this->params = array();
         $this->method = 'GET';
     }
-    
+
     /**
      * Set command
      * @param string $command 
      */
     public function setCommand($command)
     {
-        if(!in_array($command, $this->availCommands)){
+        if (!in_array($command, $this->availCommands)) {
             throw new TWCException('This command not available in API');
         }
 
@@ -69,19 +70,21 @@ class ApiData {
 
     /**
      * Set resource part (Location ID, zip code)
-     * @param string $resoursePart 
-     * @param bool $urlencoded 
+     * 
+     * @param string $resoursePart  Part of resource for query string
+     * @param bool   $spacesEscaped Escaped spaces
+     * @param bool   $cleaned       Cleaned
      */
     public function setResourcePart($resoursePart, $spacesEscaped = false, $cleaned = false)
     {
-        if(!$cleaned){
+        if (!$cleaned) {
             $resoursePart = $this->cleanPart($resoursePart);
         }
-        
-        if(!$spacesEscaped){
+
+        if (!$spacesEscaped) {
             $resoursePart = $this->escapeSpaces($resoursePart);
         }
-        
+
         $this->resourcePart = $resoursePart;
     }
 
@@ -91,7 +94,7 @@ class ApiData {
      */
     public function setCountry($countryCode)
     {
-        if(is_string($countryCode) && strlen($countryCode) == 2){
+        if (is_string($countryCode) && strlen($countryCode) == 2) {
             $this->country =  strtoupper($countryCode);
         }
     }
@@ -102,9 +105,9 @@ class ApiData {
      */
     public function enabledCountry($enabled)
     {
-        if(is_bool($enabled)){
+        if (is_bool($enabled)) {
             $this->enabledCountry = $enabled;
-        } 
+        }
     }
 
     /**
@@ -113,26 +116,28 @@ class ApiData {
      */
     public function setParams(array $params)
     {
-        foreach($params as $paramsName => $paramsValue){
-            if(!in_array($paramsName, $this->availParam)) unset($params[$paramsName]);
+        foreach ($params as $paramsName => $paramsValue) {
+            if (!in_array($paramsName, $this->availParam)) {
+                unset($params[$paramsName]);
+            }
         }
-        
+
         $this->params = $params;
     }
-    
+
     /**
      * Set HTTP Method
      * @param string $method 
      */
     public function setMethod($method)
     {
-        if(!in_array($method, $this->availMethods)){
+        if (!in_array($method, $this->availMethods)) {
             throw new TWCException("This method don't support");
         }
-        
+
         $this->method = $method;
     }
-    
+
     /**
      * Get content format
      * @return string json|xml 
@@ -147,65 +152,66 @@ class ApiData {
      * @return Buzz\Message\Response 
      */
     public function getData()
-    {   
+    {
         $resource = $this->getDataResourse();
-        
+
         $request = new BuzzRequest($this->method, $resource, $this->host);
         $response = new BuzzResponse();
-        
+
         $client = new FileGetContents();
-        
-        try{
+
+        try {
             $client->send($request, $response);
 
-            if($response->isOk()){
+            if ($response->isOk()) {
                 return $response;
             }
-        } catch (TWCException $e){
+        } catch (TWCException $e) {
             return null;
         }
 
         return null;
     }
-    
+
     /**
      * Get resource for Request
      * @return string
      */
     protected function getDataResourse()
     {
-        if(!isset($this->command{0})){
+        if (!isset($this->command{0})) {
             throw new TWCException("You must set the command! Use setCommand() method.");
         }
-        
-        if(!isset($this->resourcePart{0})){
+
+        if (!isset($this->resourcePart{0})) {
             throw new TWCException("You must set location ID or zip code! Use setResourcePart() method.");
         }
-        
+
         $paramsStr = '';
-        if(count($this->params) > 0){
-            foreach($this->params as $paramName => $paramValue){
+        if (count($this->params) > 0) {
+            foreach ($this->params as $paramName => $paramValue) {
                 $paramsStr .= '&' . $paramName . '=' .$paramValue;
             }
-        }   
-        
+        }
+
         $countryStr = '';
-        if(true === $this->enabledCountry){
+        if (true === $this->enabledCountry) {
             $countryStr .= '&country=' . $this->country;
-        }   
-        
-        return  '/data/' . $this->command . '/' . $this->resourcePart . 
-                '?doctype=' . $this->format . 
-                '&locale=' . $this->locale . 
-                '&units=' . $this->units . 
-                '&apikey=' . $this->apiKey . 
-                $countryStr . 
+        }
+
+        return  '/data/' . $this->command . '/' . $this->resourcePart .
+                '?doctype=' . $this->format .
+                '&locale=' . $this->locale .
+                '&units=' . $this->units .
+                '&apikey=' . $this->apiKey .
+                $countryStr .
                 $paramsStr;
     }
-    
+
     /**
      * Clean resourcePart
      * @param string $partStr
+     * 
      * @return string 
      */
     protected function cleanPart($partStr)
@@ -238,11 +244,12 @@ class ApiData {
         );
 
         return stripslashes(str_replace($badSymbols, '', $partStr));
-    }    
-    
+    }
+
     /**
      * Escape spaces in $resourcePart
      * @param string $partStr
+     * 
      * @return string
      */
     protected function escapeSpaces($partStr)

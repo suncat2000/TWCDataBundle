@@ -5,9 +5,9 @@ namespace SunCat\Exception;
 /**
  * TWCException
  *
- * @author Nikolay Ivlev
+ * @author Nikolay Ivlev <sun_cat2000@mail.ru>
  */
-class TWCException  extends \Exception 
+class TWCException  extends \Exception
 {
-    
+
 }
